@@ -1,3 +1,6 @@
+# Pre post-install:
+# fix visudo: update-alternatives --config editor
+
 # This is a post-installation script for Kali Linux.
 # It is tested on:
 #    - ESXi 8.0.1
