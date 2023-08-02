@@ -1,0 +1,63 @@
+#!/bin/bash
+
+nmap -sN frankenkali  #quick nmap
+# Starting Nmap 7.94 ( https://nmap.org ) at 2023-07-18 19:28 CDT
+# Nmap scan report for frankenkali (172.16.2.59)
+# Host is up (0.000033s latency).
+# Not shown: 997 closed tcp ports (reset)
+# PORT     STATE         SERVICE
+# 22/tcp   open|filtered ssh
+# 80/tcp   open|filtered http
+# 3390/tcp open|filtered dsc
+# MAC Address: 00:0C:29:2D:CF:FA (VMware)
+
+# Nmap done: 1 IP address (1 host up) scanned in 1.36 seconds
+
+nmap -p 80,22 -sV -sC frankenkali #deep nmap
+# Starting Nmap 7.94 ( https://nmap.org ) at 2023-07-18 19:39 CDT
+# Nmap scan report for frankenkali (172.16.2.59)
+# Host is up (0.00018s latency).
+
+# PORT   STATE  SERVICE VERSION
+# 22/tcp closed ssh
+# 80/tcp open   http    nginx 1.17.2
+# |_http-generator: Mobirise v4.10.1, mobirise.com
+# |_http-title: WebSploit Mayhem
+# |_http-server-header: nginx/1.17.2
+# MAC Address: 00:0C:29:2D:CF:FA (VMware)
+
+# Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done: 1 IP address (1 host up) scanned in 6.43 seconds
+
+firefox -> Wappalyzer plugin #enumerate technology
+# Mobirise 4.10.1
+# Bootstrap 4.2.1
+# jquery 1.11.2
+# Popper
+# nginx 1.17.2
+
+msfconsole
+msf6> search type:exploit nginx  # nothing
+msf6> search type:exploit mobi   # nothing
+msf6> search type:exploit jquery # nothing
+
+apt install feroxbuster #enumerate directories and files
+# found something wierd called "http://frankenkali/assets/formoid/"
+# Filled in web form, got "bad request"
+# Submitted form, used browser developer tools and caught redirect to formoid.net
+# dead end
+
+# Found in the page source
+#  <meta name="description" content="Can you decode/de-crypt this?
+# Jrer lbh noyr gb svaq gur frperg qverpgbel">
+# Were you able to find the hidden directory
+
+# Re-examined feroxbuster results
+feroxbuster -u http://frankenkali -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-small.txt
+
+# found http://host/s
+# Downloaded secrets.bin
+string secrets.bin
+# Private key hidden in binary
+#Saved private key and used to SSH into box using the root account.  POP goes the weasel!
+
